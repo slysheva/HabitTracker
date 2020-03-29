@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="square">Square</string>
+    <string name="looooooong_description">looooooong_description</string>
+    <string name="habit1">habit1</string>
+    <string name="set_the_habit_period">Set the habit period:</string>
+    <string name="set_the_habit_priority">Set the habit priority:</string>
+    <string name="bad">bad</string>
+    <string name="good">good</string>
+    <string name="times_in">times in</string>
+    <string name="times_in_">times_in_</string>
+    <string name="time_s_in">" time(s) in "</string>
+</resources>
