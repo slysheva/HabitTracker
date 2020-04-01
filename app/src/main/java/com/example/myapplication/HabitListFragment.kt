@@ -10,15 +10,13 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-
 
 
 class HabitListFragment : Fragment() {
 
     private var adapter: HabitsAdapter? = null
     private var habitType = ""
-    var callback: onHabitChengeRequestListenner? = null
+    var callback: HabitChangeRequestListener? = null
 
     companion object {
         const val  GOOD_HABITS = "GOOD_HABITS"
@@ -32,7 +30,7 @@ class HabitListFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        callback = activity as onHabitChengeRequestListenner
+        callback = activity as HabitChangeRequestListener
     }
 
     override fun onCreateView(
@@ -49,34 +47,26 @@ class HabitListFragment : Fragment() {
         }
         val habitsList = view.findViewById<RecyclerView>(R.id.recyclerview)
         habitsList.layoutManager = LinearLayoutManager(activity)
-        Log.d(this::class.java.canonicalName, "new list created ${MainActivity.habits.size}" )
-        if (MainActivity.habits.size > 0)
-            Log.d(this::class.java.canonicalName, "first habit: ${MainActivity.habits[0].type}" )
 
         adapter =when (habitType) {
             GOOD_HABITS -> HabitsAdapter(activity!!,
                 MainActivity.habits.filter{ habit -> habit.type == HabitType.GOOD } as MutableList<Habit>) { itemClicked, pos ->
-                callback?.habitChangeRequest(itemClicked, pos, MainActivity.HABIT_EDIT_REQUEST)
-                adapter?.notifyDataSetChanged()
+                callback?.onHabitChangeRequest(itemClicked, pos, MainActivity.HABIT_EDIT_REQUEST)
             }
             else -> HabitsAdapter(activity!!,
                 MainActivity.habits.filter{ habit -> habit.type == HabitType.BAD } as MutableList<Habit>) { itemClicked, pos ->
-                callback?.habitChangeRequest(itemClicked, pos, MainActivity.HABIT_EDIT_REQUEST)
-                adapter?.notifyDataSetChanged()
+                callback?.onHabitChangeRequest(itemClicked, pos, MainActivity.HABIT_EDIT_REQUEST)
             }
         }
         habitsList.adapter = adapter
     }
 
-    interface onHabitChengeRequestListenner {
-        fun habitChangeRequest(habit: Habit?, pos: Int?, status: Int)
+    interface HabitChangeRequestListener {
+        fun onHabitChangeRequest(habit: Habit?, pos: Int?, status: Int)
     }
-
-
 
     override fun onResume() {
         super.onResume()
         adapter?.notifyDataSetChanged()
     }
-
 }

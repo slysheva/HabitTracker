@@ -92,7 +92,7 @@ class NewHabitFragment : Fragment() {
                 toast.show()
             }
             else {
-                habit = Habit(
+                val newHabit = Habit(
                         nameText,
                         descriptionText,
                         priority,
@@ -101,12 +101,12 @@ class NewHabitFragment : Fragment() {
                         periodicityText.toInt()
                 )
 
-                callback?.onHabitChange(habit, idParam, statusCode)
+                callback?.onHabitChange(newHabit, idParam, statusCode)
             }
         }
     }
 
     interface OnHabitSelectedListener{
-        fun onHabitChange(habit: Habit?, pos: Int?, statusCode: Int?)
+        fun onHabitChange(habit: Habit, pos: Int?, statusCode: Int?)
     }
 }

@@ -11,7 +11,7 @@ import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 
 
-class HabitsAdapter(val context: Context, private val habits: MutableList<Habit>, val clickListener: (Habit, Int) -> Unit)
+class HabitsAdapter(private val context: Context, private val habits: MutableList<Habit>, val clickListener: (Habit, Int) -> Unit)
     : RecyclerView.Adapter<ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(context).inflate(R.layout.list_item, parent, false)
@@ -46,12 +46,12 @@ class ViewHolder (private val view: View) : RecyclerView.ViewHolder(view) {
         view.setOnClickListener { clickListener(habit, pos)}
     }
 
-    val imageView = view.findViewById(R.id.imageView2) as ImageView
-    val habitTitle = view.findViewById(R.id.habitTitle) as TextView
-    val habitDescription = view.findViewById(R.id.habitDescription) as TextView
-    val habitType = view.findViewById(R.id.habitType) as TextView
-    val habitPriority = view.findViewById(R.id.habitPriority) as TextView
-    val habitPeriod = view.findViewById(R.id.habitPeriod) as TextView
-    val habitQuantity = view.findViewById(R.id.habitQuantity) as TextView
+    private val imageView = view.findViewById(R.id.imageView2) as ImageView
+    private val habitTitle = view.findViewById(R.id.habitTitle) as TextView
+    private val habitDescription = view.findViewById(R.id.habitDescription) as TextView
+    private val habitType = view.findViewById(R.id.habitType) as TextView
+    private val habitPriority = view.findViewById(R.id.habitPriority) as TextView
+    private val habitPeriod = view.findViewById(R.id.habitPeriod) as TextView
+    private val habitQuantity = view.findViewById(R.id.habitQuantity) as TextView
 }
 
