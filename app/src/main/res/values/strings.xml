@@ -10,4 +10,13 @@
     <string name="times_in">times in</string>
     <string name="times_in_">times_in_</string>
     <string name="time_s_in">" time(s) in "</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="my_habits">My habits</string>
+    <string name="about">About</string>
+    <string name="habit_tracker_android_application_v01">Habit Tracker android application, v01</string>
+    <string name="open_drawer" />
+    <string name="close_drawer">close_drawer</string>
+    <string name="try_it_now">try it now</string>
 </resources>

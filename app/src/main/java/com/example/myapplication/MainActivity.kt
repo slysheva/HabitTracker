@@ -1,93 +1,117 @@
 package com.example.myapplication
 
-import android.app.Activity
-import android.content.Intent
-import android.content.res.Configuration
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ListView
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import android.view.MenuItem
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
+import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.Serializable
 
-class MainActivity : AppCompatActivity() {
-    private var habits = mutableListOf<Habit>()
-    private var adapter: HabitsAdapter? = null
-    private val HABITS_REQUEST = 0
-    private val HABITS_ADD_REQUEST = 0
-    private val HABIT_EDIT_REQUEST = 1
-    private val HABIT_REMOVE_REQUEST = 2
+
+class MainActivity : AppCompatActivity(), NewHabitFragment.OnHabitSelectedListener, HabitListFragment.onHabitChengeRequestListenner, NavigationView.OnNavigationItemSelectedListener  {
 
     companion object {
-        const val HABIT_STRING = "HABIT"
-        const val ID_STRING = "ID"
         const val HABITS_STRING = "HABITS"
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d(this::class.java.canonicalName, "Started with value: $HABITS_REQUEST")
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-        Log.d(this::class.java.canonicalName, "Restarted with value: $HABITS_REQUEST" )
+        const val HABITS_ADD_REQUEST = 0
+        const val HABIT_EDIT_REQUEST = 1
+        const val HABIT_REMOVE_REQUEST = 2
+        var habits = mutableListOf<Habit>()
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(this::class.java.canonicalName, "Created with value: $HABITS_REQUEST" )
+        Log.d(this::class.java.canonicalName, "in onCreate" )
         setContentView(R.layout.activity_main)
+        Log.d(this::class.java.canonicalName, "kek" )
 
-        val habitsList = findViewById<RecyclerView>(R.id.recyclerview)
-        habitsList.layoutManager = LinearLayoutManager(this)
+//        val navController = this.findNavController(R.id.navigation_fragment)
+//        NavigationUI.setupActionBarWithNavController(this, navController, navigation_drawer)
+//        NavigationUI.setupWithNavController(navigation_view, navController)
 
-        adapter = HabitsAdapter(this, habits) { itemClicked, pos ->
-            val sendIntent = Intent(this, NewHabitActivity::class.java).apply {
-                val bundle = Bundle().apply{
-                    putSerializable(HABIT_STRING, itemClicked)
-                    putInt(ID_STRING, pos)
-                }
-                putExtras(bundle)
-            }
-            startActivityForResult(sendIntent, HABIT_EDIT_REQUEST)
-        }
+        val drawerToggle =
+            ActionBarDrawerToggle(this,
+                navigation_drawer,
+                R.string.open_drawer,
+                R.string.close_drawer)
+        navigation_drawer.addDrawerListener(drawerToggle)
 
-        habitsList.adapter = adapter
+        val homeFragment = HomeFragment()
+        supportFragmentManager.beginTransaction()
+            .add(R.id.fragment_container, homeFragment!!, "homeFragment")
+            .commit()
+        navigation_view.setNavigationItemSelectedListener(this)
 
-        val fab = findViewById<FloatingActionButton>(R.id.fab)
-        fab.setOnClickListener{
-            val sendIntent = Intent(this, NewHabitActivity::class.java)
-            startActivityForResult(sendIntent, HABITS_ADD_REQUEST)
-        }
+        Log.d(this::class.java.canonicalName, "lol" )
 
     }
 
-    override fun onActivityResult(
-        requestCode: Int, resultCode: Int,
-        data: Intent?
-    ) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                val newHabit = data.getSerializableExtra(HABIT_STRING) as Habit
+//    override fun onSupportNavigateUp(): Boolean {
+//        val navController = this.findNavController(R.id.navigation_fragment)
+//        return NavigationUI.navigateUp(navController, navigation_drawer)
+//    }
 
-                if (requestCode == HABIT_EDIT_REQUEST) {
-                    val id = data.extras!!.getInt(ID_STRING)
-                    habits[id] = newHabit
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_item_home -> {
+                for (fragment in supportFragmentManager.fragments) {
+                    if (fragment !is NavHostFragment) {
+                        supportFragmentManager.beginTransaction().remove(fragment).commit()
+
+                    }
                 }
-                else if(requestCode == HABITS_ADD_REQUEST && !habits.contains(newHabit)) {
-                    habits.add(newHabit)
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.fragment_container, HomeFragment(), "homeFragment")
+                    .commit()
+                Log.d(this::class.java.canonicalName, "home item clicked" )
+            }
+            R.id.menu_item_about -> {
+                for (fragment in supportFragmentManager.fragments) {
+                    if (fragment !is NavHostFragment)
+                        supportFragmentManager.beginTransaction().remove(fragment).commit()
                 }
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.fragment_container, AboutFragment(), "aboutFragment")
+                    .commit()
+
+                Log.d(this::class.java.canonicalName, "about item clicked" )
             }
         }
-        adapter?.notifyDataSetChanged()
+        navigation_drawer.closeDrawer(GravityCompat.START)
+        return true
+    }
+
+    override fun onHabitChange(habit: Habit?, pos: Int?, statusCode: Int?) {
+        if (habit != null) {
+            Log.d(this::class.java.canonicalName, "in callback, $statusCode, ${habit.name}, $pos" )
+        }
+        if (statusCode == HABIT_EDIT_REQUEST && pos != null && habit != null) {
+            habits[pos] = habit
+        }
+        else if(statusCode == HABITS_ADD_REQUEST) {
+            if (habit != null) {
+                habits.add(habit)
+            }
+
+            Log.d(this::class.java.canonicalName, "added, cur size: ${habits.size}" )
+
+        }
+        if (habits.size > 0)
+            Log.d(this::class.java.canonicalName, "first habit: ${habits[0].type}" )
+        supportFragmentManager.findFragmentByTag("newHabitFragment")?.let {
+            supportFragmentManager.beginTransaction()
+                .remove(it)
+                .add(R.id.fragment_container, HomeFragment(), "homeFragment")
+                .commit()
+            Log.d(this::class.java.canonicalName, "removed" )
+        }
     }
 
     public override fun onSaveInstanceState(outState: Bundle) {
@@ -97,18 +121,20 @@ class MainActivity : AppCompatActivity() {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         habits = savedInstanceState.getSerializable(HABITS_STRING) as MutableList<Habit>
-        habits.sortByDescending { habit -> habit.priority }
-        adapter = HabitsAdapter(this, habits) { itemClicked, pos ->
-            val sendIntent = Intent(this, NewHabitActivity::class.java).apply {
-                val bundle = Bundle().apply{
-                    putSerializable(HABIT_STRING, itemClicked)
-                    putInt(ID_STRING, pos)
-                }
-                putExtras(bundle)
-            }
-            startActivityForResult(sendIntent, HABIT_EDIT_REQUEST)
-        }
         super.onRestoreInstanceState(savedInstanceState)
     }
+
+    override fun habitChangeRequest(habit: Habit?, pos: Int?, status: Int) {
+        var newPos: Int? = null
+        if (habit != null)
+            newPos = habits.indexOf(habit)
+        val fragment = NewHabitFragment.newInstance(habit, newPos, status)
+        supportFragmentManager.beginTransaction()
+            .remove(supportFragmentManager.findFragmentByTag( "homeFragment")!!)
+            .add(R.id.fragment_container, fragment, "newHabitFragment")
+            .commit()
+    }
+
+
 }
 
