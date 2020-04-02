@@ -38,6 +38,8 @@ class NewHabitFragment : Fragment() {
             }
     }
 
+    private lateinit var myView: View
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         callback = activity as OnHabitSelectedListener
@@ -59,17 +61,11 @@ class NewHabitFragment : Fragment() {
             statusCode = it.get(STATUS_CODE) as Int
         }
 
+        myView = view
         val deleteButton = view.button_delete
 
         if (habit != null) {
-
-            view.editTitle.setText(habit!!.name)
-            view.editDescription.setText(habit!!.description)
-            view.habitPriority.progress = habit!!.priority
-            (view.habitType[(habit!!.type.num + 1) % 2] as RadioButton)
-                .isChecked = true
-            view.editTimes.setText(habit!!.quantity.toString())
-            view.editDays.setText(habit!!.periodicity.toString())
+            fillFields(view)
 
             deleteButton.setOnClickListener {
                 callback?.onHabitChange(habit!!, idParam, MainActivity.HABIT_REMOVE_REQUEST)
@@ -113,6 +109,21 @@ class NewHabitFragment : Fragment() {
                 callback?.onHabitChange(newHabit, idParam, statusCode)
             }
         }
+    }
+
+    fun updateHabit(newHabit: Habit) {
+        habit = newHabit
+        fillFields(myView)
+    }
+
+    fun fillFields(view: View){
+        view.editTitle.setText(habit!!.name)
+        view.editDescription.setText(habit!!.description)
+        view.habitPriority.progress = habit!!.priority
+        (view.habitType[(habit!!.type.num + 1) % 2] as RadioButton)
+            .isChecked = true
+        view.editTimes.setText(habit!!.quantity.toString())
+        view.editDays.setText(habit!!.periodicity.toString())
     }
 
     interface OnHabitSelectedListener{

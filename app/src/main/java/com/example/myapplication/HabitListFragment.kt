@@ -47,14 +47,14 @@ class HabitListFragment : Fragment() {
         }
         val habitsList = view.findViewById<RecyclerView>(R.id.recyclerview)
         habitsList.layoutManager = LinearLayoutManager(activity)
-
+        Log.d("tag", "created")
         adapter =when (habitType) {
             GOOD_HABITS -> HabitsAdapter(activity!!,
-                MainActivity.habits.filter{ habit -> habit.type == HabitType.GOOD } as MutableList<Habit>) { itemClicked, pos ->
+                MainActivity.goodHabits) { itemClicked, pos ->
                 callback?.onHabitChangeRequest(itemClicked, pos, MainActivity.HABIT_EDIT_REQUEST)
             }
             else -> HabitsAdapter(activity!!,
-                MainActivity.habits.filter{ habit -> habit.type == HabitType.BAD } as MutableList<Habit>) { itemClicked, pos ->
+                MainActivity.badHabits) { itemClicked, pos ->
                 callback?.onHabitChangeRequest(itemClicked, pos, MainActivity.HABIT_EDIT_REQUEST)
             }
         }
