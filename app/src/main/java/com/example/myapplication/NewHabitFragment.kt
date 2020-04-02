@@ -59,6 +59,8 @@ class NewHabitFragment : Fragment() {
             statusCode = it.get(STATUS_CODE) as Int
         }
 
+        val deleteButton = view.button_delete
+
         if (habit != null) {
 
             view.editTitle.setText(habit!!.name)
@@ -68,10 +70,17 @@ class NewHabitFragment : Fragment() {
                 .isChecked = true
             view.editTimes.setText(habit!!.quantity.toString())
             view.editDays.setText(habit!!.periodicity.toString())
+
+            deleteButton.setOnClickListener {
+                callback?.onHabitChange(habit!!, idParam, MainActivity.HABIT_REMOVE_REQUEST)
+            }
         }
 
-        val button = view.button_create
-        button.setOnClickListener{
+        if (statusCode == MainActivity.HABITS_ADD_REQUEST)
+            deleteButton.visibility = View.GONE
+
+        val createButton = view.button_create
+        createButton.setOnClickListener{
             val nameText = view.editTitle.text.toString()
             val descriptionText = view.editDescription.text.toString()
             val priority = view.habitPriority.progress

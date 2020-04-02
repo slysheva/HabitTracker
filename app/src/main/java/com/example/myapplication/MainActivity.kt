@@ -39,10 +39,11 @@ class MainActivity : AppCompatActivity(), NewHabitFragment.OnHabitSelectedListen
     }
 
     override fun onHabitChange(habit: Habit, pos: Int?, statusCode: Int?) {
-        if (statusCode == HABIT_EDIT_REQUEST && pos != null)
-            habits[pos] = habit
-        else if(statusCode == HABITS_ADD_REQUEST)
-            habits.add(habit)
+        when (statusCode) {
+            HABIT_EDIT_REQUEST -> habits[pos!!] = habit
+            HABITS_ADD_REQUEST -> habits.add(habit)
+            HABIT_REMOVE_REQUEST -> habits.removeAt(pos!!)
+        }
 
         navController.navigate(R.id.action_newHabitFragment_to_homeFragment)
     }
