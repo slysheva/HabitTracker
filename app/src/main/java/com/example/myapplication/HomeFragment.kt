@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.fragment_home_pager.*
@@ -13,6 +15,7 @@ import kotlinx.android.synthetic.main.fragment_home_pager.*
 
 class HomeFragment : Fragment() {
     var callback: HabitListFragment.HabitChangeRequestListener? = null
+    lateinit var navController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,10 +41,11 @@ class HomeFragment : Fragment() {
                 else -> getString(R.string.good)
             }
         }.attach()
+        navController = findNavController()
 
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener{
-            callback?.onHabitChangeRequest(null, null, MainActivity.HABITS_ADD_REQUEST)
+            navController.navigate(R.id.action_homeFragment_to_newHabitFragment)
         }
     }
 }

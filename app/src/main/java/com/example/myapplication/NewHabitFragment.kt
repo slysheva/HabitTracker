@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,16 +10,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.get
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
+import com.example.myapplication.viewmodels.EditHabitViewModel
 import kotlinx.android.synthetic.main.new_habit_fragment.*
 import kotlinx.android.synthetic.main.new_habit_fragment.view.*
 import java.io.Serializable
+import java.util.*
 
 
 class NewHabitFragment : Fragment() {
     private var habit: Habit? = null
-    private var idParam: Int? = null
-    private var statusCode: Int? = null
+    private var  idParam: Int = -1
     var callback: OnHabitSelectedListener? = null
+    private lateinit var viewModel: EditHabitViewModel
+    private lateinit var navController: NavController
 
     companion object {
         private const val HABIT_PARAM = "HABIT"
@@ -45,6 +55,20 @@ class NewHabitFragment : Fragment() {
         callback = activity as OnHabitSelectedListener
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            habit = it.get(HABIT_PARAM) as Habit?
+            idParam = it.getInt(ID_PARAM, -1)
+        }
+        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return EditHabitViewModel(idParam) as T
+            }
+        }).get(EditHabitViewModel::class.java)
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -57,24 +81,30 @@ class NewHabitFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         arguments?.let {
             habit = it.get(HABIT_PARAM) as Habit?
-            idParam = it.get(ID_PARAM) as Int?
-            statusCode = it.get(STATUS_CODE) as Int
+            idParam = it.getInt(ID_PARAM, -1)
         }
 
+        navController = findNavController()
+
         myView = view
+        viewModel.habit.observe(viewLifecycleOwner, Observer { habit ->
+            habit?.let { fillFields(it) }
+        })
         val deleteButton = view.button_delete
 
         if (habit != null) {
-            fillFields(view)
+//            fillFields(habit!!)
 
             deleteButton.setOnClickListener {
-                callback?.onHabitChange(habit!!, idParam, MainActivity.HABIT_REMOVE_REQUEST)
+                viewModel.deleteHabit()
+                navController.navigateUp()
             }
         }
 
-        if (statusCode == MainActivity.HABITS_ADD_REQUEST)
+        if (idParam == -1)
             deleteButton.visibility = View.GONE
-
+        if (habit != null)
+            Log.d("tag", "in edit ${habit!!.id}")
         val createButton = view.button_create
         createButton.setOnClickListener{
             val nameText = view.editTitle.text.toString()
@@ -98,32 +128,30 @@ class NewHabitFragment : Fragment() {
             }
             else {
                 val newHabit = Habit(
+                        if (habit != null) habit!!.id else -1,
                         nameText,
                         descriptionText,
                         priority,
                         if(typeId != typeBadBtn.id ) HabitType.BAD else HabitType.GOOD,
                         quantityText.toInt(),
-                        periodicityText.toInt()
+                        periodicityText.toInt(),
+                        Date()
                 )
-
-                callback?.onHabitChange(newHabit, idParam, statusCode)
+                viewModel.saveHabit(newHabit)
+                navController.popBackStack()
             }
         }
     }
 
-    fun updateHabit(newHabit: Habit) {
-        habit = newHabit
-        fillFields(myView)
-    }
-
-    fun fillFields(view: View){
-        view.editTitle.setText(habit!!.name)
-        view.editDescription.setText(habit!!.description)
-        view.habitPriority.progress = habit!!.priority
-        (view.habitType[(habit!!.type.num + 1) % 2] as RadioButton)
+    fun fillFields(newHabit: Habit){
+        Log.d("tag", "in fill habit ${newHabit.id}")
+        editTitle.setText(newHabit.name)
+        editDescription.setText(newHabit.description)
+        habitPriority.progress = newHabit.priority
+        (habitType[(newHabit.type.num + 1) % 2] as RadioButton)
             .isChecked = true
-        view.editTimes.setText(habit!!.quantity.toString())
-        view.editDays.setText(habit!!.periodicity.toString())
+        editTimes.setText(newHabit.quantity.toString())
+        editDays.setText(newHabit.periodicity.toString())
     }
 
     interface OnHabitSelectedListener{

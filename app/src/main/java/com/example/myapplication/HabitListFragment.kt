@@ -8,8 +8,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.viewmodels.HabitsViewModel
+import kotlinx.android.synthetic.main.home_fragment.*
 
 
 class HabitListFragment : Fragment() {
@@ -17,6 +24,9 @@ class HabitListFragment : Fragment() {
     private var adapter: HabitsAdapter? = null
     private var habitType = ""
     var callback: HabitChangeRequestListener? = null
+    lateinit var navController: NavController
+    private val viewModel: HabitsViewModel by viewModels()
+
 
     companion object {
         const val  GOOD_HABITS = "GOOD_HABITS"
@@ -45,28 +55,54 @@ class HabitListFragment : Fragment() {
         arguments?.let {
             habitType = it.getString(HABIT_TYPE, GOOD_HABITS)
         }
+        navController = findNavController()
+        viewModel.habits.observe(viewLifecycleOwner, Observer { habits ->
+            Log.d("tag", "in observe")
+            updateRecyclerView(habits)
+        })
         val habitsList = view.findViewById<RecyclerView>(R.id.recyclerview)
         habitsList.layoutManager = LinearLayoutManager(activity)
-        Log.d("tag", "created")
-        adapter =when (habitType) {
-            GOOD_HABITS -> HabitsAdapter(activity!!,
-                MainActivity.goodHabits) { itemClicked, pos ->
-                callback?.onHabitChangeRequest(itemClicked, pos, MainActivity.HABIT_EDIT_REQUEST)
+//        adapter =when (habitType) {
+//            GOOD_HABITS -> HabitsAdapter(activity!!,
+//                MainActivity.habits.filter { it.type == HabitType.GOOD } as MutableList<Habit>) { itemClicked, pos ->
+//                callback?.onHabitChangeRequest(itemClicked, pos, MainActivity.HABIT_EDIT_REQUEST)
+//                adapter?.notifyDataSetChanged()
+//            }
+//            else -> HabitsAdapter(activity!!,
+//                MainActivity.habits.filter { it.type == HabitType.BAD } as MutableList<Habit>) { itemClicked, pos ->
+//                callback?.onHabitChangeRequest(itemClicked, pos, MainActivity.HABIT_EDIT_REQUEST)
+//                adapter?.notifyDataSetChanged()
+//            }
+//        }
+//        habitsList.adapter = adapter
+    }
+
+    private fun updateRecyclerView(habits: List<Habit>) {
+            recyclerview.apply {
+                val filteredHabits = habits.filter {
+                    when (habitType) {
+                        GOOD_HABITS ->  it.type == HabitType.GOOD
+                        BAD_HABITS -> it.type == HabitType.BAD
+                        else -> true
+                    }
+                }
+                Log.d("tag", "list size ${habits.size} $habitType")
+                layoutManager = LinearLayoutManager(context)
+                adapter = HabitsAdapter(context, filteredHabits as MutableList<Habit>) { itemClicked, pos ->
+                    val habit = filteredHabits[pos]
+                    val bundle = Bundle().apply{
+                        putSerializable(MainActivity.HABIT_STRING, habit)
+                        putInt(MainActivity.ID_STRING, habit.id)
+                    }
+
+                    navController.navigate(R.id.action_homeFragment_to_newHabitFragment, bundle)
+
+                }
             }
-            else -> HabitsAdapter(activity!!,
-                MainActivity.badHabits) { itemClicked, pos ->
-                callback?.onHabitChangeRequest(itemClicked, pos, MainActivity.HABIT_EDIT_REQUEST)
-            }
-        }
-        habitsList.adapter = adapter
     }
 
     interface HabitChangeRequestListener {
         fun onHabitChangeRequest(habit: Habit?, pos: Int?, status: Int)
     }
 
-    override fun onResume() {
-        super.onResume()
-        adapter?.notifyDataSetChanged()
-    }
 }

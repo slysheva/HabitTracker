@@ -16,18 +16,18 @@ class MainActivity : AppCompatActivity(), NewHabitFragment.OnHabitSelectedListen
         const val ID_STRING = "ID"
         const val STATUS_STRING = "STATUS"
         const val HABITS_STRING = "HABITS"
-        const val GOOD_HABITS_STRING = "GOOD_HABITS"
-        const val BAD_HABITS_STRING = "BAD_HABITS"
+//        const val GOOD_HABITS_STRING = "GOOD_HABITS"
+//        const val BAD_HABITS_STRING = "BAD_HABITS"
         const val HABITS_ADD_REQUEST = 0
         const val HABIT_EDIT_REQUEST = 1
         const val HABIT_REMOVE_REQUEST = 2
-
-        var goodHabits = mutableListOf<Habit>()
-        var badHabits = mutableListOf<Habit>()
+        var habits = mutableListOf<Habit>()
+//        var goodHabits = mutableListOf<Habit>()
+//        var badHabits = mutableListOf<Habit>()
 
     }
     lateinit var navController: NavController
-    var habits = mutableListOf<Habit>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,48 +46,9 @@ class MainActivity : AppCompatActivity(), NewHabitFragment.OnHabitSelectedListen
 
     override fun onHabitChange(habit: Habit, pos: Int?, statusCode: Int?) {
         when (statusCode) {
-            HABIT_EDIT_REQUEST -> {
-                val oldHabit = habits[pos!!]
-                val id: Int
-                if (habit.type == HabitType.GOOD) {
-                    if (oldHabit.type == habit.type) {
-                        id = goodHabits.indexOf(oldHabit)
-                        goodHabits[id] = habit
-                    }
-                    else {
-                        id = badHabits.indexOf(oldHabit)
-                        badHabits.removeAt(id)
-                        goodHabits.add(habit)
-                    }
-                }
-                else {
-                    if (oldHabit.type == habit.type) {
-                        id = badHabits.indexOf(oldHabit)
-                        badHabits[id] = habit
-                    }
-                    else {
-                        id = goodHabits.indexOf(oldHabit)
-                        goodHabits.removeAt(id)
-                        badHabits.add(habit)
-                    }
-                }
-                habits[pos] = habit
-            }
-            HABITS_ADD_REQUEST -> {
-                habits.add(habit)
-                if (habit.type == HabitType.GOOD)
-                    goodHabits.add(habit)
-                else
-                    badHabits.add(habit)
-            }
-            HABIT_REMOVE_REQUEST -> {
-                val oldHabit = habits[pos!!]
-                if (oldHabit.type == HabitType.GOOD)
-                    goodHabits.remove(oldHabit)
-                else
-                    badHabits.remove(oldHabit)
-                habits.removeAt(pos)
-            }
+            HABIT_EDIT_REQUEST -> habits[pos!!] = habit
+            HABITS_ADD_REQUEST -> habits.add(habit)
+            HABIT_REMOVE_REQUEST -> habits.removeAt(pos!!)
         }
 
         navController.navigateUp()
@@ -95,16 +56,12 @@ class MainActivity : AppCompatActivity(), NewHabitFragment.OnHabitSelectedListen
 
     public override fun onSaveInstanceState(outState: Bundle) {
         outState.apply{
-            putSerializable(HABITS_STRING, goodHabits as Serializable)
-            putSerializable(GOOD_HABITS_STRING, goodHabits as Serializable)
-            putSerializable(BAD_HABITS_STRING, badHabits as Serializable)
+            putSerializable(HABITS_STRING, habits as Serializable)
         }
         super.onSaveInstanceState(outState)
     }
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        goodHabits = savedInstanceState.getSerializable(GOOD_HABITS_STRING) as MutableList<Habit>
-        badHabits = savedInstanceState.getSerializable(BAD_HABITS_STRING) as MutableList<Habit>
         habits = savedInstanceState.getSerializable(HABITS_STRING) as MutableList<Habit>
         super.onRestoreInstanceState(savedInstanceState)
     }
