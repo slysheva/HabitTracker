@@ -2,20 +2,29 @@ package com.example.myapplication
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import com.example.myapplication.viewmodels.HabitsViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.android.synthetic.main.bottom_sheet.*
 import kotlinx.android.synthetic.main.fragment_home_pager.*
 
 
 class HomeFragment : Fragment() {
     var callback: HabitListFragment.HabitChangeRequestListener? = null
     lateinit var navController: NavController
+    private val viewModel: HabitsViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,6 +51,20 @@ class HomeFragment : Fragment() {
             }
         }.attach()
         navController = findNavController()
+
+        nameFilter.addTextChangedListener {
+            Log.d("tag", it.toString())
+            viewModel.nameSubstring.value = it.toString()
+        }
+
+        sortAsc.setOnClickListener {
+            Log.d("tag", "clicked")
+            viewModel.sortByDateAsc()
+        }
+
+        sortDesc.setOnClickListener {
+            viewModel.sortByDateDesc()
+        }
 
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener{

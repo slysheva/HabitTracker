@@ -139,6 +139,7 @@ class NewHabitFragment : Fragment() {
                 )
                 viewModel.saveHabit(newHabit)
                 navController.popBackStack()
+              //  navController.navigate(R.id.action_newHabitFragment_to_homeFragment)
             }
         }
     }

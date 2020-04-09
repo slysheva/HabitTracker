@@ -26,7 +26,7 @@ class HabitsRepo {
             )
 
             mutableHabits.value?.set(newHabit.id, newHabit);
-            Log.d("tag", "added, size ${mutableHabits.value?.size}")
+            Log.d("tag", "added, size ${habits.value?.size}")
         }
 
         fun removeHabit(habitId: Int) {

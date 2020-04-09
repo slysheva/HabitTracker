@@ -21,12 +21,10 @@ import kotlinx.android.synthetic.main.home_fragment.*
 
 class HabitListFragment : Fragment() {
 
-    private var adapter: HabitsAdapter? = null
     private var habitType = ""
     var callback: HabitChangeRequestListener? = null
     lateinit var navController: NavController
-    private val viewModel: HabitsViewModel by viewModels()
-
+    private val viewModel: HabitsViewModel by activityViewModels()
 
     companion object {
         const val  GOOD_HABITS = "GOOD_HABITS"
@@ -56,25 +54,12 @@ class HabitListFragment : Fragment() {
             habitType = it.getString(HABIT_TYPE, GOOD_HABITS)
         }
         navController = findNavController()
-        viewModel.habits.observe(viewLifecycleOwner, Observer { habits ->
+
+        viewModel.habits.observe(viewLifecycleOwner, Observer { new_habits ->
             Log.d("tag", "in observe")
-            updateRecyclerView(habits)
+            updateRecyclerView(new_habits)
         })
-        val habitsList = view.findViewById<RecyclerView>(R.id.recyclerview)
-        habitsList.layoutManager = LinearLayoutManager(activity)
-//        adapter =when (habitType) {
-//            GOOD_HABITS -> HabitsAdapter(activity!!,
-//                MainActivity.habits.filter { it.type == HabitType.GOOD } as MutableList<Habit>) { itemClicked, pos ->
-//                callback?.onHabitChangeRequest(itemClicked, pos, MainActivity.HABIT_EDIT_REQUEST)
-//                adapter?.notifyDataSetChanged()
-//            }
-//            else -> HabitsAdapter(activity!!,
-//                MainActivity.habits.filter { it.type == HabitType.BAD } as MutableList<Habit>) { itemClicked, pos ->
-//                callback?.onHabitChangeRequest(itemClicked, pos, MainActivity.HABIT_EDIT_REQUEST)
-//                adapter?.notifyDataSetChanged()
-//            }
-//        }
-//        habitsList.adapter = adapter
+
     }
 
     private fun updateRecyclerView(habits: List<Habit>) {
