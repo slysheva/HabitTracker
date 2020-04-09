@@ -5,26 +5,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.example.myapplication.Home.HabitListFragment
+import com.example.myapplication.newHabit.NewHabitFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.Serializable
 
 
-class MainActivity : AppCompatActivity(), NewHabitFragment.OnHabitSelectedListener, HabitListFragment.HabitChangeRequestListener  {
+class MainActivity : AppCompatActivity()  {
 
     companion object {
         const val HABIT_STRING = "HABIT"
         const val ID_STRING = "ID"
-        const val STATUS_STRING = "STATUS"
-        const val HABITS_STRING = "HABITS"
-//        const val GOOD_HABITS_STRING = "GOOD_HABITS"
-//        const val BAD_HABITS_STRING = "BAD_HABITS"
-        const val HABITS_ADD_REQUEST = 0
-        const val HABIT_EDIT_REQUEST = 1
-        const val HABIT_REMOVE_REQUEST = 2
-        var habits = mutableListOf<Habit>()
-//        var goodHabits = mutableListOf<Habit>()
-//        var badHabits = mutableListOf<Habit>()
-
     }
     lateinit var navController: NavController
 
@@ -44,39 +35,4 @@ class MainActivity : AppCompatActivity(), NewHabitFragment.OnHabitSelectedListen
         return NavigationUI.navigateUp(navController, navigation_drawer)
     }
 
-    override fun onHabitChange(habit: Habit, pos: Int?, statusCode: Int?) {
-        when (statusCode) {
-            HABIT_EDIT_REQUEST -> habits[pos!!] = habit
-            HABITS_ADD_REQUEST -> habits.add(habit)
-            HABIT_REMOVE_REQUEST -> habits.removeAt(pos!!)
-        }
-
-        navController.navigateUp()
-    }
-
-    public override fun onSaveInstanceState(outState: Bundle) {
-        outState.apply{
-            putSerializable(HABITS_STRING, habits as Serializable)
-        }
-        super.onSaveInstanceState(outState)
-    }
-
-    public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        habits = savedInstanceState.getSerializable(HABITS_STRING) as MutableList<Habit>
-        super.onRestoreInstanceState(savedInstanceState)
-    }
-
-    override fun onHabitChangeRequest(habit: Habit?, pos: Int?, status: Int) {
-        var newPos: Int = -1
-        if (habit != null)
-            newPos = habits.indexOf(habit)
-
-        val bundle = Bundle().apply{
-            putSerializable(HABIT_STRING, habit)
-            putInt(ID_STRING, newPos)
-            putInt(STATUS_STRING, status)
-        }
-
-        navController.navigate(R.id.action_homeFragment_to_newHabitFragment, bundle)
-    }
 }

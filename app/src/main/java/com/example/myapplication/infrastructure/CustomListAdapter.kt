@@ -1,14 +1,14 @@
-package com.example.myapplication
+package com.example.myapplication.infrastructure
 
-import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.Habit
+import com.example.myapplication.HabitType
+import com.example.myapplication.R
 
 
 class HabitsAdapter(private val context: Context, private val habits: MutableList<Habit>, val clickListener: (Habit, Int) -> Unit)

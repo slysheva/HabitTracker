@@ -21,7 +21,7 @@
             android:layout_height="30dp"
             android:background="@color/colorPrimary"
             android:gravity="center"
-            android:text="search"
+            android:text="@string/search"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@android:color/white" />
 
@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autofillHints=""
-            android:hint="name"
+            android:hint="@string/name"
             android:inputType="text"
             android:textColorHint="@android:color/tertiary_text_light" />
 
@@ -43,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Sort by edit date"
+                android:text="@string/sortMsg"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,7 +60,7 @@
                     app:layout_constraintEnd_toStartOf="@id/sortAsc"
                     android:layout_marginHorizontal="20dp"
                     android:textColor="@android:color/white"
-                    android:text="New habits first" />
+                    android:text="@string/sortDesc" />
 
 
                 <Button
@@ -72,10 +72,9 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:textColor="@android:color/white"
-                    android:text="Old habits first" />
+                    android:text="@string/sortAsc" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
 
         </LinearLayout>
 

@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.Home
 
 import android.content.Context
 import android.os.Bundle
@@ -9,20 +9,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.viewmodels.HabitsViewModel
+import com.example.myapplication.*
+import com.example.myapplication.infrastructure.HabitsAdapter
 import kotlinx.android.synthetic.main.home_fragment.*
 
 
 class HabitListFragment : Fragment() {
 
     private var habitType = ""
-    var callback: HabitChangeRequestListener? = null
     lateinit var navController: NavController
     private val viewModel: HabitsViewModel by activityViewModels()
 
@@ -32,13 +30,9 @@ class HabitListFragment : Fragment() {
         private const val HABIT_TYPE = "HABIT_TYPE"
 
         fun newInstance(habitType: String): HabitListFragment {
-            return HabitListFragment().apply { arguments = bundleOf(HABIT_TYPE to habitType) }
+            return HabitListFragment()
+                .apply { arguments = bundleOf(HABIT_TYPE to habitType) }
         }
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callback = activity as HabitChangeRequestListener
     }
 
     override fun onCreateView(
@@ -51,7 +45,10 @@ class HabitListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.let {
-            habitType = it.getString(HABIT_TYPE, GOOD_HABITS)
+            habitType = it.getString(
+                HABIT_TYPE,
+                GOOD_HABITS
+            )
         }
         navController = findNavController()
 
@@ -73,21 +70,27 @@ class HabitListFragment : Fragment() {
                 }
                 Log.d("tag", "list size ${habits.size} $habitType")
                 layoutManager = LinearLayoutManager(context)
-                adapter = HabitsAdapter(context, filteredHabits as MutableList<Habit>) { itemClicked, pos ->
+                adapter = HabitsAdapter(
+                    context,
+                    filteredHabits as MutableList<Habit>
+                ) { itemClicked, pos ->
                     val habit = filteredHabits[pos]
-                    val bundle = Bundle().apply{
-                        putSerializable(MainActivity.HABIT_STRING, habit)
-                        putInt(MainActivity.ID_STRING, habit.id)
+                    val bundle = Bundle().apply {
+                        putSerializable(
+                            MainActivity.HABIT_STRING,
+                            habit
+                        )
+                        putInt(
+                            MainActivity.ID_STRING,
+                            habit.id
+                        )
                     }
 
-                    navController.navigate(R.id.action_homeFragment_to_newHabitFragment, bundle)
-
+                    navController.navigate(
+                        R.id.action_homeFragment_to_newHabitFragment,
+                        bundle
+                    )
                 }
             }
     }
-
-    interface HabitChangeRequestListener {
-        fun onHabitChangeRequest(habit: Habit?, pos: Int?, status: Int)
-    }
-
 }

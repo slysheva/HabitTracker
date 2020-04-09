@@ -1,9 +1,8 @@
-package com.example.myapplication.viewmodels
+package com.example.myapplication.Home
 
 import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.Habit
 import com.example.myapplication.repositories.HabitsRepo
@@ -15,18 +14,15 @@ class HabitsViewModel : ViewModel() {
     val habits: MediatorLiveData<List<Habit>> = MediatorLiveData()
 
     init {
-        habits.addSource(HabitsRepo.habits,  Observer { newHabits ->
-            Log.d("tag", "in viewmodel ${newHabits.size}")
-            habits.value = newHabits.values.filter { true }
-            Log.d("tag", "real size ${habits.value?.size}")
-
-        })
-        habits.addSource(nameSubstring, Observer { newNameFilterSubstring ->
+        habits.addSource(HabitsRepo.habits) { newHabits ->
+            Log.d("tag", "in onchange ${newHabits.size}")
+            habits.value = newHabits.values.toList()
+        }
+        habits.addSource(nameSubstring) { newNameFilterSubstring ->
             habits.value = HabitsRepo.habits.value?.values?.filter {
                 filterHabitsByName(it, newNameFilterSubstring)
             }
-        })
-
+        }
     }
 
     private fun filterHabitsByName(
@@ -39,24 +35,13 @@ class HabitsViewModel : ViewModel() {
 
     fun sortByDateAsc() {
         Log.d("tag", "in sorting")
-        Log.d("tag", habits.value?.size.toString())
-
-        //Log.d("tag", habits.value?.get(0)!!.name)
 
         habits.value = habits.value?.sortedBy { it.creationDate }
-        //Log.d("tag", habits.value?.get(0)!!.name)
-
     }
 
     fun sortByDateDesc() {
         Log.d("tag", "in sorting")
-        Log.d("tag", habits.value?.size.toString())
-
-        //Log.d("tag", habits.value?.get(0)!!.name)
-
         habits.value = habits.value?.sortedByDescending { it.creationDate }
-       // Log.d("tag", habits.value?.get(0)!!.name)
-
     }
 
     fun sortByPriorityDesc() {
