@@ -73,16 +73,11 @@ class HabitListFragment : Fragment() {
                 adapter = HabitsAdapter(
                     context,
                     filteredHabits as MutableList<Habit>
-                ) { itemClicked, pos ->
-                    val habit = filteredHabits[pos]
+                ) { itemClicked, _ ->
                     val bundle = Bundle().apply {
-                        putSerializable(
-                            MainActivity.HABIT_STRING,
-                            habit
-                        )
                         putInt(
                             MainActivity.ID_STRING,
-                            habit.id
+                            itemClicked.id
                         )
                     }
 
