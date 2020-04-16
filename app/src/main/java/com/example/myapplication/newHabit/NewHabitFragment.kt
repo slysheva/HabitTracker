@@ -1,6 +1,5 @@
 package com.example.myapplication.newHabit
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -15,12 +14,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import com.example.myapplication.Habit
+import com.example.myapplication.repositories.database.Habit
 import com.example.myapplication.HabitType
 import com.example.myapplication.R
 import kotlinx.android.synthetic.main.new_habit_fragment.*
 import kotlinx.android.synthetic.main.new_habit_fragment.view.*
-import java.io.Serializable
 import java.util.*
 
 
@@ -113,16 +111,17 @@ class NewHabitFragment : Fragment() {
                 toast.show()
             }
             else {
-                val newHabit = Habit(
-                    idParam,
-                    nameText,
-                    descriptionText,
-                    priority,
-                    if (typeId != typeBadBtn.id) HabitType.BAD else HabitType.GOOD,
-                    quantityText.toInt(),
-                    periodicityText.toInt(),
-                    Date()
-                )
+                val newHabit =
+                    Habit(
+                        null,
+                        nameText,
+                        descriptionText,
+                        priority,
+                        if (typeId != typeBadBtn.id) HabitType.BAD else HabitType.GOOD,
+                        quantityText.toInt(),
+                        periodicityText.toInt(),
+                        Date()
+                    )
                 viewModel.saveHabit(newHabit)
                 navController.popBackStack()
             }

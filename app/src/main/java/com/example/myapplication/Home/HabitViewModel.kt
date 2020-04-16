@@ -1,28 +1,36 @@
 package com.example.myapplication.Home
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.Habit
-import com.example.myapplication.repositories.HabitsRepo
+import com.example.myapplication.App
+import com.example.myapplication.HabitType
+import com.example.myapplication.repositories.database.Habit
+import com.example.myapplication.repositories.inmemory.HabitsRepo
 import java.util.*
 
 class HabitsViewModel : ViewModel() {
 
     val nameSubstring: MutableLiveData<String> = MutableLiveData()
     val habits: MediatorLiveData<List<Habit>> = MediatorLiveData()
+    private val allHabits: LiveData<List<Habit>> = App.database.habitDao().getAll()
+
 
     init {
-        habits.addSource(HabitsRepo.habits) { newHabits ->
+        habits.addSource(allHabits) { newHabits ->
             Log.d("tag", "in onchange ${newHabits.size}")
-            habits.value = newHabits.values.toList()
+            habits.value = newHabits.toList()
         }
         habits.addSource(nameSubstring) { newNameFilterSubstring ->
-            habits.value = HabitsRepo.habits.value?.values?.filter {
+            Log.d("tag", "in wrong onchange ")
+
+            habits.value = allHabits.value?.filter {
                 filterHabitsByName(it, newNameFilterSubstring)
             }
         }
+
     }
 
     private fun filterHabitsByName(

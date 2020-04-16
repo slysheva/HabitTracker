@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.Habit
+import com.example.myapplication.repositories.database.Habit
 import com.example.myapplication.HabitType
 import com.example.myapplication.R
 
 
-class HabitsAdapter(private val context: Context, private val habits: MutableList<Habit>, val clickListener: (Habit, Int) -> Unit)
+class HabitsAdapter(private val context: Context, private var habits: MutableList<Habit>, val clickListener: (Habit, Int) -> Unit)
     : RecyclerView.Adapter<ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(context).inflate(R.layout.list_item, parent, false)
@@ -24,6 +24,9 @@ class HabitsAdapter(private val context: Context, private val habits: MutableLis
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(habits[position],position,  clickListener)
+    }
+    fun updateHabits(newHabits: MutableList<Habit>){
+        habits = newHabits
     }
 }
 

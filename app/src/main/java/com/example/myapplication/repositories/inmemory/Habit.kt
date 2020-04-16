@@ -1,5 +1,6 @@
-package com.example.myapplication
+package com.example.myapplication.repositories.inmemory
 
+import com.example.myapplication.HabitType
 import java.io.Serializable
 import java.util.*
 

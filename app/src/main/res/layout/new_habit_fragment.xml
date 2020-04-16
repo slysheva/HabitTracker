@@ -111,8 +111,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:max="10"
-            android:outlineSpotShadowColor="#5523E3"
-            android:outlineAmbientShadowColor="#5523E3"
             android:layout_margin="5dp"/>
         <TextView
             android:id="@+id/enterPeriod"

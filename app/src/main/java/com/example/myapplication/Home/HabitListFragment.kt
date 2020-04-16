@@ -1,6 +1,5 @@
 package com.example.myapplication.Home
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -23,6 +22,7 @@ class HabitListFragment : Fragment() {
     private var habitType = ""
     lateinit var navController: NavController
     private val viewModel: HabitsViewModel by activityViewModels()
+    private var listAdapter: HabitsAdapter? = null
 
     companion object {
         const val  GOOD_HABITS = "GOOD_HABITS"
@@ -51,41 +51,33 @@ class HabitListFragment : Fragment() {
             )
         }
         navController = findNavController()
+        recyclerview.adapter = HabitsAdapter(context!!, mutableListOf()){ itemClicked, _ ->
+                                    val bundle = Bundle().apply {
+                            putInt(
+                                MainActivity.ID_STRING,
+                                itemClicked.id!!
+                            )
+                        }
 
-        viewModel.habits.observe(viewLifecycleOwner, Observer { new_habits ->
-            Log.d("tag", "in observe")
-            updateRecyclerView(new_habits)
+                        navController.navigate(
+                            R.id.action_homeFragment_to_newHabitFragment,
+                            bundle
+                        )
+                    }
+        recyclerview.layoutManager = LinearLayoutManager(context)
+
+        viewModel.habits.observe(viewLifecycleOwner, Observer { habits ->
+            Log.d("habits size", habits.size.toString())
+            (recyclerview.adapter as HabitsAdapter).updateHabits(
+                when (habitType) {
+                    GOOD_HABITS -> habits.filter { it.type == HabitType.GOOD } as MutableList
+                    else -> habits.filter { it.type == HabitType.BAD } as MutableList
+                }
+            )
+
+            (recyclerview.adapter as HabitsAdapter).notifyDataSetChanged()
         })
 
     }
-
-    private fun updateRecyclerView(habits: List<Habit>) {
-            recyclerview.apply {
-                val filteredHabits = habits.filter {
-                    when (habitType) {
-                        GOOD_HABITS ->  it.type == HabitType.GOOD
-                        BAD_HABITS -> it.type == HabitType.BAD
-                        else -> true
-                    }
-                }
-                Log.d("tag", "list size ${habits.size} $habitType")
-                layoutManager = LinearLayoutManager(context)
-                adapter = HabitsAdapter(
-                    context,
-                    filteredHabits as MutableList<Habit>
-                ) { itemClicked, _ ->
-                    val bundle = Bundle().apply {
-                        putInt(
-                            MainActivity.ID_STRING,
-                            itemClicked.id
-                        )
-                    }
-
-                    navController.navigate(
-                        R.id.action_homeFragment_to_newHabitFragment,
-                        bundle
-                    )
-                }
-            }
-    }
 }
+

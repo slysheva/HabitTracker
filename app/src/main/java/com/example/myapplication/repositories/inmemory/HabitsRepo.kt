@@ -1,9 +1,8 @@
-package com.example.myapplication.repositories
+package com.example.myapplication.repositories.inmemory
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.myapplication.Habit
 
 class HabitsRepo {
     companion object {
@@ -11,7 +10,8 @@ class HabitsRepo {
             mutableMapOf()
         )
 
-        val habits: LiveData<MutableMap<Int, Habit>> = mutableHabits
+        val habits: LiveData<MutableMap<Int, Habit>> =
+            mutableHabits
 
         fun addHabit(habit: Habit) {
             val newHabit= Habit(
