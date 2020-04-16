@@ -11,12 +11,11 @@ abstract class HabitsDB : RoomDatabase() {
     abstract fun habitDao(): HabitDao
 
     companion object {
-        @Volatile
-        private var INSTANCE: HabitsDB? = null
+        private var DB_INSTANCE: HabitsDB? = null
 
-        fun getInstance(context: Context) = INSTANCE ?: synchronized(this) {
-            INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
-        }
+        fun getInstance(context: Context) = DB_INSTANCE ?:
+            DB_INSTANCE ?: buildDatabase(context).also { DB_INSTANCE = it }
+
 
         private fun buildDatabase(context: Context) = Room.databaseBuilder(
             context.applicationContext,
