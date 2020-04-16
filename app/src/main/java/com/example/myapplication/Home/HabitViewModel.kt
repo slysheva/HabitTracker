@@ -14,23 +14,30 @@ import java.util.*
 class HabitsViewModel : ViewModel() {
 
     val nameSubstring: MutableLiveData<String> = MutableLiveData()
-    val habits: MediatorLiveData<List<Habit>> = MediatorLiveData()
+    val goodHabits: MediatorLiveData<List<Habit>> = MediatorLiveData()
+    val badHabits: MediatorLiveData<List<Habit>> = MediatorLiveData()
+
     private val allHabits: LiveData<List<Habit>> = App.database.habitDao().getAll()
 
-
     init {
-        habits.addSource(allHabits) { newHabits ->
-            Log.d("tag", "in onchange ${newHabits.size}")
-            habits.value = newHabits.toList()
+        goodHabits.addSource(allHabits) { newHabits ->
+            goodHabits.value = newHabits.filter { it.type == HabitType.GOOD }
         }
-        habits.addSource(nameSubstring) { newNameFilterSubstring ->
-            Log.d("tag", "in wrong onchange ")
+        badHabits.addSource(allHabits) { newHabits ->
+            badHabits.value = newHabits.filter { it.type == HabitType.BAD }
+        }
+        goodHabits.addSource(nameSubstring) { newNameFilterSubstring ->
 
-            habits.value = allHabits.value?.filter {
-                filterHabitsByName(it, newNameFilterSubstring)
+            goodHabits.value = allHabits.value?.filter {
+                filterHabitsByName(it, newNameFilterSubstring) && it.type == HabitType.GOOD
             }
         }
+        badHabits.addSource(nameSubstring) { newNameFilterSubstring ->
 
+            badHabits.value = allHabits.value?.filter {
+                filterHabitsByName(it, newNameFilterSubstring) && it.type == HabitType.BAD
+            }
+        }
     }
 
     private fun filterHabitsByName(
@@ -38,25 +45,18 @@ class HabitsViewModel : ViewModel() {
         newNameFilterSubstring: String? = nameSubstring.value
     ): Boolean {
         return newNameFilterSubstring.isNullOrEmpty() ||
-                newNameFilterSubstring.toLowerCase(Locale.ROOT) in habit.name.toLowerCase(Locale.ROOT)
+                newNameFilterSubstring.toLowerCase(Locale.getDefault()) in habit.name.toLowerCase(Locale.getDefault())
     }
 
     fun sortByDateAsc() {
         Log.d("tag", "in sorting")
-
-        habits.value = habits.value?.sortedBy { it.creationDate }
+        goodHabits.value = goodHabits.value?.sortedBy { it.creationDate }
+        badHabits.value = badHabits.value?.sortedBy { it.creationDate }
     }
 
     fun sortByDateDesc() {
         Log.d("tag", "in sorting")
-        habits.value = habits.value?.sortedByDescending { it.creationDate }
-    }
-
-    fun sortByPriorityDesc() {
-        habits.value = habits.value?.sortedByDescending { it.priority }
-    }
-
-    fun sortByPriority() {
-        habits.value = habits.value?.sortedBy { it.priority }
+        goodHabits.value = goodHabits.value?.sortedByDescending { it.creationDate }
+        badHabits.value = badHabits.value?.sortedByDescending { it.creationDate }
     }
 }

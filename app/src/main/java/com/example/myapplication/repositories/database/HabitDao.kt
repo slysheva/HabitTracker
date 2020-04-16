@@ -13,11 +13,11 @@ interface   HabitDao {
     fun getById(id: Int): LiveData<Habit?>
 
     @Insert
-    suspend fun insert(habit: Habit)
+    fun insert(habit: Habit)
 
     @Delete
-    suspend fun delete(habit: Habit)
+    fun delete(habit: Habit)
 
     @Update
-    suspend fun update(habit: Habit)
+    fun update(habit: Habit)
 }

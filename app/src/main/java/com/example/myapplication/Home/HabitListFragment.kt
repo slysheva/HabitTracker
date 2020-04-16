@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.*
 import com.example.myapplication.infrastructure.HabitsAdapter
+import com.example.myapplication.repositories.database.Habit
 import kotlinx.android.synthetic.main.home_fragment.*
 
 
@@ -22,7 +23,6 @@ class HabitListFragment : Fragment() {
     private var habitType = ""
     lateinit var navController: NavController
     private val viewModel: HabitsViewModel by activityViewModels()
-    private var listAdapter: HabitsAdapter? = null
 
     companion object {
         const val  GOOD_HABITS = "GOOD_HABITS"
@@ -65,19 +65,16 @@ class HabitListFragment : Fragment() {
                         )
                     }
         recyclerview.layoutManager = LinearLayoutManager(context)
-
-        viewModel.habits.observe(viewLifecycleOwner, Observer { habits ->
-            Log.d("habits size", habits.size.toString())
-            (recyclerview.adapter as HabitsAdapter).updateHabits(
-                when (habitType) {
-                    GOOD_HABITS -> habits.filter { it.type == HabitType.GOOD } as MutableList
-                    else -> habits.filter { it.type == HabitType.BAD } as MutableList
-                }
-            )
-
-            (recyclerview.adapter as HabitsAdapter).notifyDataSetChanged()
-        })
-
+        when (habitType) {
+            GOOD_HABITS -> viewModel.goodHabits.observe(viewLifecycleOwner, Observer {habits ->
+                (recyclerview.adapter as HabitsAdapter).updateHabits(habits as MutableList<Habit>)
+                (recyclerview.adapter as HabitsAdapter).notifyDataSetChanged()
+            })
+            else -> viewModel.badHabits.observe(viewLifecycleOwner, Observer {habits ->
+                (recyclerview.adapter as HabitsAdapter).updateHabits(habits as MutableList<Habit>)
+                (recyclerview.adapter as HabitsAdapter).notifyDataSetChanged()
+            })
+        }
     }
 }
 

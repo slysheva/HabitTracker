@@ -24,7 +24,7 @@ import java.util.*
 
 class NewHabitFragment : Fragment() {
     private var  idParam: Int = -1
-    private lateinit var viewModel: EditHabitViewModel
+    private lateinit var viewModel: NewHabitViewModel
     private lateinit var navController: NavController
 
     companion object {
@@ -49,11 +49,11 @@ class NewHabitFragment : Fragment() {
         }
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return EditHabitViewModel(
+                return NewHabitViewModel(
                     idParam
                 ) as T
             }
-        }).get(EditHabitViewModel::class.java)
+        }).get(NewHabitViewModel::class.java)
 
     }
 
@@ -97,33 +97,33 @@ class NewHabitFragment : Fragment() {
             val typeId = view.habitType.checkedRadioButtonId
             val quantityText = view.editTimes.text.toString()
             val periodicityText = view.editDays.text.toString()
-            if (nameText == "" ||
-                descriptionText == "" ||
-                typeId == -1 ||
-                quantityText == "" ||
-                periodicityText == "") {
+            if (viewModel.verifyHabitParams(
+                    nameText = view.editTitle.text.toString(),
+                    descriptionText = view.editDescription.text.toString(),
+                    typeId = view.habitType.checkedRadioButtonId,
+                    quantityText = view.editTimes.text.toString(),
+                    periodicityText = view.editDays.text.toString()
+                )) {
+
+                viewModel.saveHabit(
+                    nameText,
+                    descriptionText,
+                    priority,
+                    if (typeId != typeBadBtn.id) HabitType.BAD else HabitType.GOOD,
+                    quantityText,
+                    periodicityText
+                )
+                navController.popBackStack()
+            }
+            else {
                 val toast = Toast.makeText(
-                    getActivity(),
+                    activity,
                     "Fill all params",
                     Toast.LENGTH_SHORT
                 )
+
                 toast.setGravity(Gravity.BOTTOM, 0, 0)
                 toast.show()
-            }
-            else {
-                val newHabit =
-                    Habit(
-                        null,
-                        nameText,
-                        descriptionText,
-                        priority,
-                        if (typeId != typeBadBtn.id) HabitType.BAD else HabitType.GOOD,
-                        quantityText.toInt(),
-                        periodicityText.toInt(),
-                        Date()
-                    )
-                viewModel.saveHabit(newHabit)
-                navController.popBackStack()
             }
         }
     }
