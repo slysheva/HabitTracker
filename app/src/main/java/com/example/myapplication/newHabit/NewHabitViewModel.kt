@@ -53,16 +53,18 @@ class NewHabitViewModel(private val habitId: Int) : ViewModel() {
             periodicityText.toInt(),
             Date()
         )
-        val habitDao = App.database.habitDao()
+        viewModelScope.launch(Dispatchers.IO) {
+            val habitDao = App.database.habitDao()
             if (habitId == -1) {
                 habitDao.insert(habit)
             } else {
                 habit.id = habitId
                 habitDao.update(habit)
             }
+        }
     }
 
-    fun deleteHabit() {
+    fun deleteHabit() = viewModelScope.launch(Dispatchers.IO) {
         val habitDao = App.database.habitDao()
             habitDao.delete(habit.value!!)
     }

@@ -67,7 +67,8 @@ class HabitListFragment : Fragment() {
         recyclerview.layoutManager = LinearLayoutManager(context)
         when (habitType) {
             GOOD_HABITS -> viewModel.goodHabits.observe(viewLifecycleOwner, Observer {habits ->
-                (recyclerview.adapter as HabitsAdapter).updateHabits(habits as MutableList<Habit>)
+                val newHabits = if (habits.isEmpty()) mutableListOf() else habits as MutableList<Habit>
+                (recyclerview.adapter as HabitsAdapter).updateHabits(newHabits)
                 (recyclerview.adapter as HabitsAdapter).notifyDataSetChanged()
             })
             else -> viewModel.badHabits.observe(viewLifecycleOwner, Observer {habits ->
@@ -77,4 +78,3 @@ class HabitListFragment : Fragment() {
         }
     }
 }
-
