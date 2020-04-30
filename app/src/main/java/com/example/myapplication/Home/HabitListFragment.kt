@@ -53,9 +53,9 @@ class HabitListFragment : Fragment() {
         navController = findNavController()
         recyclerview.adapter = HabitsAdapter(context!!, mutableListOf()){ itemClicked, _ ->
                                     val bundle = Bundle().apply {
-                            putInt(
+                            putString(
                                 MainActivity.ID_STRING,
-                                itemClicked.id!!
+                                itemClicked.id
                             )
                         }
 

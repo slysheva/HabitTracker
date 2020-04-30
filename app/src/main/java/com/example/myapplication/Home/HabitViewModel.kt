@@ -1,14 +1,13 @@
 package com.example.myapplication.Home
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.example.myapplication.App
 import com.example.myapplication.HabitType
 import com.example.myapplication.repositories.database.Habit
 import com.example.myapplication.repositories.inmemory.HabitsRepo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 
 class HabitsViewModel : ViewModel() {
@@ -17,7 +16,7 @@ class HabitsViewModel : ViewModel() {
     val goodHabits: MediatorLiveData<List<Habit>> = MediatorLiveData()
     val badHabits: MediatorLiveData<List<Habit>> = MediatorLiveData()
 
-    private val allHabits: LiveData<List<Habit>> = App.database.habitDao().getAll()
+    private val allHabits: LiveData<List<Habit>> = App.habitsRepository.getAllHabits()
 
     init {
         goodHabits.addSource(allHabits) { newHabits ->
@@ -37,6 +36,10 @@ class HabitsViewModel : ViewModel() {
             badHabits.value = allHabits.value?.filter {
                 filterHabitsByName(it, newNameFilterSubstring) && it.type == HabitType.BAD
             }
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            App.habitsRepository.initializeHabits()
         }
     }
 

@@ -15,10 +15,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class NewHabitViewModel(private val habitId: Int) : ViewModel() {
-    private val mutableHabit: MutableLiveData<Habit?> = MutableLiveData()
+class NewHabitViewModel(private val habitId: String?) : ViewModel() {
 
-    val habit: LiveData<Habit?> =  App.database.habitDao().getById(habitId)
+    val habit: LiveData<Habit?> =  App.habitsRepository.getHabitById(habitId)
 
     fun verifyHabitParams(
         nameText: String,
@@ -43,29 +42,20 @@ class NewHabitViewModel(private val habitId: Int) : ViewModel() {
                    quantityText: String,
                    periodicityText: String
     ) {
-        val habit = Habit (
-            if (habitId == -1) null else habitId,
-            nameText,
-            descriptionText,
-            priority,
-            typeId,
-            quantityText.toInt(),
-            periodicityText.toInt(),
-            Date()
-        )
-        viewModelScope.launch(Dispatchers.IO) {
-            val habitDao = App.database.habitDao()
-            if (habitId == -1) {
-                habitDao.insert(habit)
-            } else {
-                habit.id = habitId
-                habitDao.update(habit)
-            }
+        viewModelScope.launch(Dispatchers.Default) {
+            App.habitsRepository.addOrUpdate(
+                habitId,
+                nameText,
+                descriptionText,
+                priority,
+                typeId,
+                quantityText.toInt(),
+                periodicityText.toInt()
+            )
         }
     }
 
     fun deleteHabit() = viewModelScope.launch(Dispatchers.IO) {
-        val habitDao = App.database.habitDao()
-            habitDao.delete(habit.value!!)
+        App.habitsRepository.delete(habit.value!!)
     }
 }

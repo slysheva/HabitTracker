@@ -23,18 +23,18 @@ import java.util.*
 
 
 class NewHabitFragment : Fragment() {
-    private var  idParam: Int = -1
+    private var  idParam: String? = null
     private lateinit var viewModel: NewHabitViewModel
     private lateinit var navController: NavController
 
     companion object {
         private const val ID_PARAM = "ID"
 
-        fun newInstance(habit: Habit?, idParam: Int?) =
+        fun newInstance(habit: Habit?, idParam: String?) =
             NewHabitFragment().apply {
                 arguments = Bundle().apply {
                     if (idParam != null) {
-                        putInt(ID_PARAM, idParam)
+                        putString(ID_PARAM, idParam)
                     }
                 }
             }
@@ -45,7 +45,7 @@ class NewHabitFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            idParam = it.getInt(ID_PARAM, -1)
+            idParam = it.getString(ID_PARAM, null)
         }
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -68,7 +68,7 @@ class NewHabitFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.let {
-            idParam = it.getInt(ID_PARAM, -1)
+            idParam = it.getString(ID_PARAM, null)
         }
 
         navController = findNavController()
@@ -79,16 +79,16 @@ class NewHabitFragment : Fragment() {
         })
         val deleteButton = view.button_delete
 
-        if (idParam != -1) {
+        if (idParam != null) {
             deleteButton.setOnClickListener {
                 viewModel.deleteHabit()
                 navController.navigateUp()
             }
         }
 
-        if (idParam == -1)
+        if (idParam == null)
             deleteButton.visibility = View.GONE
-        Log.d("tag", "in edit ${idParam}")
+        Log.d("tag", "in edit $idParam")
         val createButton = view.button_create
         createButton.setOnClickListener{
             val nameText = view.editTitle.text.toString()

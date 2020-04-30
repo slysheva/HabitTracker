@@ -27,4 +27,5 @@
     <string name="sortMsg">Sort by edit date</string>
     <string name="name">name</string>
     <string name="search">search</string>
+    <string name="useravatar">userAvatar</string>
 </resources>
