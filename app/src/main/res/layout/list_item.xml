@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#7BBF9FEF"
+    android:background="@color/colorLight"
+    app:layout_constraintCircleRadius="20dp"
     android:orientation="horizontal">
 
         <TextView

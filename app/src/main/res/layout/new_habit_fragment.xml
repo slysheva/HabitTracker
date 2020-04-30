@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/new_habit_fragment"
-    tools:context=".NewHabitFragment">
+    tools:context=".newHabit.NewHabitFragment">
 
 
     <LinearLayout
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Title"
+            android:hint="Title"
             android:textSize="20sp"
             android:layout_margin="5dp"/>
 
@@ -61,7 +61,7 @@
             android:layout_margin="5dp"
             android:ems="10"
             android:inputType="textLongMessage"
-            android:text="Description"
+            android:hint="Description"
             android:textSize="20sp" />
 
         <TextView
@@ -111,8 +111,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:max="10"
-            android:outlineSpotShadowColor="#5523E3"
-            android:outlineAmbientShadowColor="#5523E3"
             android:layout_margin="5dp"/>
         <TextView
             android:id="@+id/enterPeriod"
@@ -172,7 +170,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:shadowColor="#5523E3"
+            android:background="@drawable/round_shape"
             android:text="@string/create" />
 
         <Button
@@ -181,8 +179,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:shadowColor="#5523E3"
-            android:text="@string/delete" />
+            android:background="@drawable/round_shape_dark"
+            android:text="@string/delete"
+            android:textColor="#FFFFFF" />
 
 
 

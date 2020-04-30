@@ -15,11 +15,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <androidx.viewpager2.widget.ViewPager2
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/view_pager_home_fragment"
-        android:layout_marginTop="42dp"/>
+        android:layout_marginTop="42dp"
+        android:layout_height="match_parent" />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -29,8 +30,8 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
         android:src="@android:drawable/ic_menu_add"
-        app:backgroundTint="#5523E3"
-        app:rippleColor="#5523E3" />
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:rippleColor="@color/colorPrimaryDark" />
 
-
+    <include layout="@layout/bottom_sheet" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
